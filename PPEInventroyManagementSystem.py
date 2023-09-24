@@ -96,8 +96,8 @@ def initial():
 
 #Login
 def login(usrname, passwrd, admin):
-    with open("users.txt" ,"r") as f:
-        db = [[str(n) for n in line.strip().split(",")] for line in f.readlines() if line.strip()]
+    with open("users.txt", "r") as loginFile:
+        db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
     #Checking user
     loginStat = False
@@ -109,7 +109,7 @@ def login(usrname, passwrd, admin):
                 adminMainMenu()
                 admin = True
                 return admin
-            if (db[x][2] == "S"):
+            elif (db[x][2] == "S"):
                 mainMenu()
                 admin = False
                 return admin
@@ -132,11 +132,13 @@ def adminMainMenu():
         print("6. Logout")
         print("=========================")
 
-        try:
-            option = int(input("Please selct an option: "))
-            admin = True
-        except:
-            print("\nOnly numbers can be input, please try again")
+        option = input("Please selct an option: ")
+        admin = True
+
+        if (option == "1"):
+            inventory(admin)
+        else:
+            print("There is no such option")
 
 def mainMenu():
     while True:
@@ -148,11 +150,141 @@ def mainMenu():
         print("5. Logout")
         print("=========================")
             
-        try:
-            option = int(input("Please selct an option: "))
-            admin = False
-        except:
+        option = input("Please selct an option: ")
+        admin = False
+
+        if (option == "1"):
+            inventory(admin)
+        else:
             print("\nOnly numbers can be input, please try again")
+
+def inventory(admin):         
+    while True:
+        with open("ppe.txt", "r") as ppeFile:
+            ppeDB = [[str(n) for n in line.strip().split(",")] for line in ppeFile.readlines() if line.strip()]
+
+        print("\nPPE Inventory Management\n")
+
+        print("1. View Inventory")
+        print("2. Add Inventory")
+        print("3. Distribute Inventory")
+        print("4. Back")
+
+        print("===============")
+        option = input("Select an option: ")
+        print("===============")
+
+        #Viewving Inventory-----------------------------------------------------------------------
+        if (option == "1"):
+            print("\nViewing inventory...\n")
+
+            print("___________________________________________")
+            print("|{:^15}|{:^15}|{:^10}|".format("Item Code", "Item Name", "Quantity"))
+            print("|------------------------------------------|")
+            for x in range(len(ppeDB)):
+                print("|{:^15}|{:^15}|{:^10}|".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2]))
+            print("|__________________________________________|")
+        
+        #Adding Inventory-----------------------------------------------------------------------
+        elif (option == "2"):
+            print("\nAdding inventory...\n")
+
+            itemCode = input("Item unique code: ")
+
+            #Searching
+            for x in range(0, len(ppeDB)):
+                if (itemCode == ppeDB[x][0]):
+                    search = ppeDB[x][0]
+                    key = x
+                else:
+                    pass
+            
+            if (search == itemCode):
+                #Show the item quantity before and after adding
+                print("Current quantity: " + ppeDB[key][2])
+
+                itemQuantity = input("\nAmount adding to inventory: ")
+
+                total = int(ppeDB[key][2]) + int(itemQuantity)
+                print("\nQuantity after adding: " + str(total))
+
+                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                if (confirm.lower() == "y"):
+                    ppeDB[key][2] = total
+
+                    #Write into ppe.txt
+                    with open("ppe.txt", "wt") as ppeFile:
+                        for x in range(len(ppeDB)):
+                            line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
+                            ppeFile.write(line)
+                    
+                    print("\nOperation successful")
+                    print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
+            else:
+                print("\nInvalid item code")
+                print("____________________")
+            
+            ppeFile.close()
+
+        #Distributing Inventory-----------------------------------------------------------------------
+        elif (option == "3"):
+            print("Distributing Inventory...")
+
+            itemCode = input("Item unique code: ")
+
+            #Searching
+            for x in range(0, len(ppeDB)):
+                if (itemCode == ppeDB[x][0]):
+                    search = ppeDB[x][0]
+                    key = x
+                else:
+                    pass
+            
+            if (search == itemCode):
+                #Show the item quantity before and after distributing
+                print("Current quantity: " + ppeDB[key][2])
+
+                itemQuantity = input("\nAmount distibuting: ")
+
+                total = int(ppeDB[key][2]) - int(itemQuantity)
+                print("\nQuantity after distributing: " + str(total))
+
+                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                if (confirm.lower() == "y"):
+                    ppeDB[key][2] = total
+
+                    #Write into ppe.txt
+                    with open("ppe.txt", "wt") as ppeFile:
+                        for x in range(len(ppeDB)):
+                            line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
+                            ppeFile.write(line)
+                    
+                    print("\nOperation successful")
+                    print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
+            else:
+                print("\nInvalid item code")
+                print("____________________")
+
+            ppeFile.close()
+
+        #Back-----------------------------------------------------------------------
+        elif (option == "4"):
+            if admin:
+                adminMainMenu()
+            else:
+                mainMenu()
+
+        else:
+            print("Invalid option, please try again")
+            print("____________________")
 
 #Main Logic
 while True:
