@@ -99,9 +99,9 @@ def login(usrname, passwrd, admin):
     with open("users.txt", "r") as loginFile:
         db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
-    #Checking user
     loginStat = False
 
+    #Checking user
     for x in range(0, len(db)):
         if (usrname == db[x][0] and passwrd == db[x][1]):
             loginStat = True
@@ -137,8 +137,10 @@ def adminMainMenu():
 
         if (option == "1"):
             inventory(admin)
+        elif (option == "5"):
+            users()
         else:
-            print("There is no such option")
+            print("\nThere is no such option")
 
 def mainMenu():
     while True:
@@ -156,7 +158,7 @@ def mainMenu():
         if (option == "1"):
             inventory(admin)
         else:
-            print("\nOnly numbers can be input, please try again")
+            print("\nThere is no such option")
 
 def inventory(admin):         
     while True:
@@ -189,9 +191,9 @@ def inventory(admin):
         elif (option == "2"):
             print("\nAdding inventory...\n")
 
-            itemCode = input("Item unique code: ")
+            itemCode = input("Item code: ")
 
-            #Searching
+            #Search for item item code
             for x in range(0, len(ppeDB)):
                 if (itemCode == ppeDB[x][0]):
                     search = ppeDB[x][0]
@@ -234,9 +236,9 @@ def inventory(admin):
         elif (option == "3"):
             print("Distributing Inventory...")
 
-            itemCode = input("Item unique code: ")
+            itemCode = input("Item code: ")
 
-            #Searching
+            #Search for item code
             for x in range(0, len(ppeDB)):
                 if (itemCode == ppeDB[x][0]):
                     search = ppeDB[x][0]
@@ -273,6 +275,7 @@ def inventory(admin):
                 print("\nInvalid item code")
                 print("____________________")
 
+
             ppeFile.close()
 
         #Back-----------------------------------------------------------------------
@@ -281,10 +284,164 @@ def inventory(admin):
                 adminMainMenu()
             else:
                 mainMenu()
-
         else:
             print("Invalid option, please try again")
             print("____________________")
+
+def users():
+    while True:
+        with open("users.txt", "r") as usersFile:
+            usersDB = [[str(n) for n in line.strip().split(",")] for line in usersFile.readlines() if line.strip()]
+
+        print("\nPPE Admin Users Management\n")
+
+        print("1. View All Users")
+        print("2. Add Users")
+        print("3. Edit Users")
+        print("4. Delete Users")
+        print("5. Back")
+
+        print("===============")
+        option = input("Select an option: ")
+        print("===============")
+
+        #Viewving Users-----------------------------------------------------------------------
+        if (option == "1"):
+            print("\nViewing all users...\n")
+
+            print("________________________________________________")
+            print("|{:^15}|{:^15}|{:^15}|".format("username", "Password", "Authority"))
+            print("|-----------------------------------------------|")
+            for x in range(len(usersDB)):
+                print("|{:^15}|{:^15}|{:^15}|".format(usersDB[x][0], usersDB[x][1], usersDB[x][2]))
+            print("|_______________________________________________|")
+
+        #Adding Users-----------------------------------------------------------------------
+        elif (option == "2"):
+            print("\nAdding users...\n")
+
+            newUser = input("New username: ")
+
+            #Search for the same username
+            for x in range(0, len(usersDB)):
+                if (newUser == usersDB[x][0]):
+                    dupe = True
+                    print("\nUsername " + usersDB[x][0] + " has been taken, please try again")
+                else:
+                    dupe = False
+            
+            if (dupe == True):
+                break
+            #If false, admin will be able to set the password and authority
+            else:
+                newPassword = input("New password: ")
+                authority = input("Authorization (A / S): ")
+
+                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                if (confirm.lower() == "y"):
+                    if (authority.lower() == "a" or "s"):
+                        #Append into users.txt
+                        with open("users.txt", "at") as usersFile:
+                            line = "{},{},{}\n".format(newUser, newPassword, authority.upper())
+                            usersFile.write(line)
+
+                        print("\nOperation successful")
+                        print("____________________")
+                    else:
+                        print("\nInvalid authority status!")
+                        print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
+        
+        #Editing Users-----------------------------------------------------------------------
+        elif (option == "3"):
+            print("Editing users...\n")
+
+            editUser = input("User to edit: ")
+
+            #Search for user
+            for x in range(0, len(usersDB)):
+                if (editUser == usersDB[x][0]):
+                    search = usersDB[x][0]
+                    key = x
+                else:
+                    pass
+
+            if (search == editUser):
+                print("\nCurrent username: " + usersDB[key][0])
+                print("Current password: " + usersDB[key][1])
+                print("Current authorization: " + usersDB[key][2])
+
+                newUsername = input("\nNew username: ")
+                newPassword = input("New password: ")
+                newAuthority = input("New authorization: ")
+
+                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                if (confirm.lower() == "y"):
+                    usersDB[key][0] = newUsername
+                    usersDB[key][1] = newPassword
+                    usersDB[key][2] = newAuthority
+
+                    #Write into users.txt
+                    with open("users.txt", "wt") as usersFile:
+                        for x in range(0, len(usersDB)):
+                            line = "{},{},{}\n".format(usersDB[x][0], usersDB[x][1], usersDB[x][2].upper())
+                            usersFile.write(line)
+                    
+                    print("\nOperation successful")
+                    print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
+            else:
+                print("\nUsername cant be found in database")
+                print("____________________")
+
+        #Deleting Users-----------------------------------------------------------------------
+        elif (option == "4"):
+            print("Deleting users...\n")
+        
+            deleteUser = input("Username: ")
+
+            #Search for user
+            for x in range(0, len(usersDB)):
+                if (deleteUser == usersDB[x][0]):
+                    search = usersDB[x][0]
+                    key = x
+                else:
+                    pass
+
+            print("Are you really sure you want to delete " + search + " from database")
+
+            confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+            #If true, pop the inputted user
+            if (confirm.lower() == "y"):
+                del usersDB[key]
+            
+                #Write into users.txt
+                with open("users.txt", "wt") as usersFile:
+                    for x in range(len(usersDB)):
+                        line = "{},{},{}\n".format(usersDB[x][0], usersDB[x][1], usersDB[x][2])
+                        usersFile.write(line)
+
+                print("\nOperation successful")
+                print("____________________")
+            else:
+                print("\nOperation canceled")
+                print("____________________")
+
+        #Back-----------------------------------------------------------------------
+        elif (option == "5"):
+            adminMainMenu()
+        else:
+            print("Invalid option, please try again")
+            print("____________________")
+
+    usersFile.close()
 
 #Main Logic
 while True:
