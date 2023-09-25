@@ -202,7 +202,7 @@ def inventory(admin):
                     pass        
 
             if (search == itemCode):
-                #Show the item quantity before and after adding
+                #Show the item quantity before and after adding (also all the calculation)
                 print("Current quantity: " + ppeDB[key][2])
 
                 itemQuantity = input("\nAmount adding to inventory: ")
@@ -254,10 +254,13 @@ def inventory(admin):
 
                 itemQuantity = input("\nAmount distibuting: ")
 
-                total = int(ppeDB[key][2]) - int(itemQuantity)
-                print("\nQuantity after distributing: " + str(total))
+                if (int(ppeDB[key][2]) >= int(itemQuantity)):
+                    total = int(ppeDB[key][2]) - int(itemQuantity)
+                    print("\nQuantity after distributing: " + str(total))
 
-                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+                else:
+                    print("\nNot enough stock")
 
                 if (confirm.lower() == "y"):
                     ppeDB[key][2] = total
