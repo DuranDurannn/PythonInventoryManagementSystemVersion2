@@ -198,9 +198,11 @@ def inventory(admin):
                 if (itemCode == ppeDB[x][0]):
                     search = ppeDB[x][0]
                     key = x
+                    break
                 else:
-                    pass
-            
+                    search = ppeDB[x][0]
+                    pass        
+
             if (search == itemCode):
                 #Show the item quantity before and after adding
                 print("Current quantity: " + ppeDB[key][2])
@@ -234,7 +236,7 @@ def inventory(admin):
 
         #Distributing Inventory-----------------------------------------------------------------------
         elif (option == "3"):
-            print("Distributing Inventory...")
+            print("Distributing Inventory...\n")
 
             itemCode = input("Item code: ")
 
@@ -243,7 +245,9 @@ def inventory(admin):
                 if (itemCode == ppeDB[x][0]):
                     search = ppeDB[x][0]
                     key = x
+                    break
                 else:
+                    search = ppeDB[x][0]
                     pass
             
             if (search == itemCode):
