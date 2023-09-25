@@ -370,7 +370,9 @@ def users():
                 if (editUser == usersDB[x][0]):
                     search = usersDB[x][0]
                     key = x
+                    break
                 else:
+                    search = usersDB[x][0]
                     pass
 
             if (search == editUser):
@@ -415,7 +417,10 @@ def users():
                 if (deleteUser == usersDB[x][0]):
                     search = usersDB[x][0]
                     key = x
+                    break
                 else:
+                    search = usersDB[x][0]
+                    key = x
                     pass
 
             print("Are you really sure you want to delete " + search + " from database")
