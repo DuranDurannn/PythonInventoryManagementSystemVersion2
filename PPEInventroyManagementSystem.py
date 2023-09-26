@@ -167,7 +167,7 @@ def mainMenu():
             print("\nThere is no such option")
 
 #Inventory function
-def inventory(admin):         
+def inventory(admin):
     while True:
         #Make line in ppe.txt become a nested list
         with open("ppe.txt", "r") as ppeFile:
