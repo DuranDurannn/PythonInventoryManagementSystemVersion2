@@ -1,1 +1,3 @@
-a,a,a
+HS01,Hospital1,Petaling Jaya
+HS02,Hospital5,Sunway
+HS03,Hospital3,Cyber Jaya
