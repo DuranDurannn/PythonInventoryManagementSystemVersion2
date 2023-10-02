@@ -1,3 +1,5 @@
+import datetime
+
 #Initialize 
 def initial():
     try:
@@ -16,13 +18,14 @@ def initial():
                 line = supplierCode + "," + supplierName + "," + supplierLocation + "\n"
                 supplierFile.write(line)
 
-            again = (input("Do you want to key in another supplier? Press (Y) to add another, other key to cancel: "))
+            again = (input("\nDo you want to key in another supplier? Press (Y) to add another, other key to cancel: "))
 
             print("\n")
 
             if (again.lower() == "y"):
                 pass
             elif (again.lower() != "y"):
+                print("____________________")
                 break
         
         supplierFile.close()
@@ -42,14 +45,16 @@ def initial():
                 line = hospitalCode + "," + hospitalName + "," + hospitalLocation + "\n"
                 hospitalFile.write(line)
 
-            again = (input("Do you want to key in another hospital? Press (Y) to add another, other key to cancel: "))
+            again = (input("\nDo you want to key in another hospital? Press (Y) to add another, other key to cancel: "))
 
             print("\n")
 
             if (again.lower() == "y"):
                 pass
             elif (again.lower() != "y"):
+                print("____________________")
                 break
+            
 
         hospitalFile.close()
 
@@ -70,24 +75,40 @@ def initial():
                 line = itemUC + "," + itemName + ",100\n"
                 ppeFile.write(line)
 
-            again = (input("Do you want to key in another item? Press (Y) to add another, other key to cancel: "))
+            again = (input("\nDo you want to key in another item? Press (Y) to add another, other key to cancel: "))
 
             if (again.lower() == "y"):
                 pass
             elif (again.lower() != "y"):
+                print("____________________")
                 break
 
         ppeFile.close()
 
         #File creation for usres.txt and also a super user (admin)
         with open("users.txt", "x") as userFile:
-            allUsers = "admin,123,A"
-            strAllUsers = str(allUsers)
-            userFile.write(strAllUsers)
-            userFile.close()
+            print("Creating an admin...\n")
+
+        while True:
+            newAdminUsername = input("Admin username: ")
+            newAdminPassword = input("Admin password: ")
+
+            confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+            if (confirm.lower() == "y"):
+                with open("users.txt", "wt") as userFile:
+                    line = newAdminUsername + "," + newAdminPassword + "," + "A\n"
+                    userFile.write(line)
+                    print("____________________")
+                    break
+            else:
+                pass
+
+        userFile.close()
         
         print("Initialization completed... All files have been created\n")
-        print("Default username and password for admin is: admin 123\n")
+        print("Admin username: " + newAdminUsername)
+        print("Admin password: " + newAdminPassword)
     except:
         pass
 
@@ -167,7 +188,7 @@ def mainMenu():
             print("\nThere is no such option")
 
 #Inventory function
-def inventory(admin):         
+def inventory(admin):
     while True:
         #Make line in ppe.txt become a nested list
         with open("ppe.txt", "r") as ppeFile:
@@ -303,6 +324,7 @@ def inventory(admin):
             print("Invalid option, please try again")
             print("____________________")
 
+#Hospital function
 def hospitals(admin):
     while True:
         #Make line in hospitals.txt become a nested list
@@ -336,36 +358,41 @@ def hospitals(admin):
         elif (option == "2"):
             print("\nAdding hospitals...\n")
 
-            newHospitalCode = input("New hospital code: ")
+            #Check if there is more than 4 records
+            if (len(hospitalsDB) < 4):
+                newHospitalCode = input("New hospital code: ")
 
-            #Search for duplicate
-            for x in range(0, len(hospitalsDB)):
-                if (newHospitalCode == hospitalsDB[x][0]):
-                    dupe = True
-                    print("\nHospital code " + hospitalsDB[x][0] + " is already in database, please try again")
+                #Search for duplicate
+                for x in range(0, len(hospitalsDB)):
+                    if (newHospitalCode == hospitalsDB[x][0]):
+                        dupe = True
+                        print("\nHospital code " + hospitalsDB[x][0] + " is already in database, please try again")
+                        break
+                    else:
+                        dupe = False
+                    
+                if (dupe == True):
                     break
                 else:
-                    dupe = False
-                
-            if (dupe == True):
-                break
+                    newHospitalName = input("New hospital name: ")
+                    newHospitalLocation = input("New hospital Location: ")
+
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                    if (confirm.lower() == "y"):
+                        #Append into hospitals.txt
+                        with open("hospitals.txt", "at") as hospitalsFile:
+                            line = "{},{},{}\n".format(newHospitalCode, newHospitalName, newHospitalLocation)
+                            hospitalsFile.write(line)
+
+                        print("\nOperation successful")
+                        print("____________________")
+                    else:
+                        print("\nOperation canceled")
+                        print("____________________")
             else:
-                newHospitalName = input("New hospital name: ")
-                newHospitalLocation = input("New hospital Location: ")
-
-                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
-
-                if (confirm.lower() == "y"):
-                    #Append into hospitals.txt
-                    with open("hospitals.txt", "at") as hospitalsFile:
-                        line = "{},{},{}\n".format(newHospitalCode, newHospitalName, newHospitalLocation)
-                        hospitalsFile.write(line)
-
-                    print("\nOperation successful")
-                    print("____________________")
-                else:
-                    print("\nOperation canceled")
-                    print("____________________")
+                print("Only 4 hospitals can be store in database")
+                print("____________________")
 
         #Edit hospitals-----------------------------------------------------------------------
         elif (option == "3"):
@@ -394,6 +421,14 @@ def hospitals(admin):
                 for x in range(0, len(hospitalsDB)):
                     if (newHospitalCode == hospitalsDB[x][0]):
                         sameCode = True
+
+                        print("\nHospital code " + hospitalsDB[x][0] + " is already in databse, do you want to rewrite it?")
+                        rewrite = input("Press (Y) to confirm, other key to cancel: ")
+
+                        if (rewrite.lower() == "y"):
+                            sameCode = False
+                        else:
+                            pass
                         break
                     else:
                         sameCode = False
@@ -427,7 +462,7 @@ def hospitals(admin):
                         print("____________________")
             else:
                 print("\nHospital code is not in database, please try again")
-                print("____________________")    
+                print("____________________") 
                     
 
         #Deleting hospitals-----------------------------------------------------------------------
@@ -469,7 +504,7 @@ def hospitals(admin):
                 print("\nHospital code is not in database, please try again")
                 print("____________________")
             else:
-                print("\nOperation successful")
+                print("\nOperation canceled")
                 print("____________________")
             
         #Back-----------------------------------------------------------------------
