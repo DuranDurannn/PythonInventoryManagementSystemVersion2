@@ -113,15 +113,18 @@ def initial():
         pass
 
 #Login
-def login(usrname, passwrd, admin):
+def login():
     with open("users.txt", "r") as loginFile:
         db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
     loginStat = False
+    
+    username = str(input("Username: "))
+    password = str(input("Password: "))
 
     #Checking user
     for x in range(0, len(db)):
-        if (usrname == db[x][0] and passwrd == db[x][1]):
+        if (username == db[x][0] and password == db[x][1]):
             loginStat = True
             if (db[x][2] == "A"):
                 adminMainMenu()
@@ -135,7 +138,7 @@ def login(usrname, passwrd, admin):
     if loginStat:
         pass
     else:
-        print("Incorrect password or username. Please try again or contact admin for assistant!")
+        print("\nIncorrect password or username. Please try again or contact admin for assistant!")
 
 #Admin main menu
 def adminMainMenu():
@@ -688,19 +691,7 @@ def users():
 
 #Main Logic
 while True:
-    stat = False
     initial()
 
-    print("PPE Inventory Mangement System\n")
-
-    username = str(input("Username: "))
-    password = str(input("Password: "))
-
-    log = login(username, password, stat)
-
-    print("\n")
-
-    if log:
-        admin = True
-    else:
-        admin = False
+    print("\nPPE Inventory Mangement System\n")
+    log = login()
