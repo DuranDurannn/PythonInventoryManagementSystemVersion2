@@ -3,6 +3,10 @@ import datetime
 #Initialize 
 def initial():
     try:
+        #File creation for transactions.txt
+        with open ("transactions.txt", "x") as transactionFile:
+            transactionFile.close()
+
         #File creation for suppliers.txt
         with open ("suppliers.txt","x") as supplierFile:
             supplierFile.close()
@@ -58,9 +62,6 @@ def initial():
 
         hospitalFile.close()
 
-        #File creation for transactions.txt
-        open ("transactions.txt", "x")
-
         #File creation for ppe.txt
         with open ("ppe.txt","x") as ppeFile:
             ppeFile.close()
@@ -68,12 +69,19 @@ def initial():
         while True:
             print("Initial Item Detail\n")
 
-            itemUC = input("Item Code: ")
+            itemCode = input("Item Code: ")
             itemName = input("Item Name: ")
+            supplierCode = input("Supplier code: ")
 
             with open ("ppe.txt", "at") as ppeFile:
-                line = itemUC + "," + itemName + ",100\n"
+                line = itemCode + "," + itemName + ",100\n"
                 ppeFile.write(line)
+
+            date = datetime.datetime.now()
+
+            with open ("transactions.txt", "at") as transactionFile:
+                line = date.strftime("%x %X") + "," + itemCode + "," + "100" + supplierCode
+                transactionFile.write(line)
 
             again = (input("\nDo you want to key in another item? Press (Y) to add another, other key to cancel: "))
 
@@ -84,6 +92,7 @@ def initial():
                 break
 
         ppeFile.close()
+        transactionFile.close()
 
         #File creation for usres.txt and also a super user (admin)
         with open("users.txt", "x") as userFile:
@@ -118,6 +127,8 @@ def login():
         db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
     loginStat = False
+    
+    print("\nPPE Inventory Mangement System\n")
     
     username = str(input("Username: "))
     password = str(input("Password: "))
@@ -160,10 +171,16 @@ def adminMainMenu():
 
         if (option == "1"):
             inventory(admin)
+        elif (option == "2"):
+            print("Supplier")
         elif (option == "3"):
             hospitals(admin)
+        elif (option == "4"):
+            transaction(admin)
         elif (option == "5"):
             users()
+        elif (option == "6"):
+            login()
         else:
             print("\nThere is no such option")
 
@@ -185,8 +202,14 @@ def mainMenu():
 
         if (option == "1"):
             inventory(admin)
+        elif (option == "2"):
+            print("Supplier")
         elif (option == "3"):
             hospitals(admin)
+        elif (option == "4"):
+            transaction(admin)
+        elif (option == "5"):
+            login()
         else:
             print("\nThere is no such option")
 
@@ -240,6 +263,7 @@ def inventory(admin):
                 print("Current quantity: " + ppeDB[key][2])
 
                 itemQuantity = input("\nAmount adding to inventory: ")
+                supplierCode = input ("Supplier code: ")
 
                 total = int(ppeDB[key][2]) + int(itemQuantity)
                 print("\nQuantity after adding: " + str(total))
@@ -254,6 +278,13 @@ def inventory(admin):
                         for x in range(len(ppeDB)):
                             line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
                             ppeFile.write(line)
+
+                    #Write transaction into transactions.txt
+                    date = datetime.datetime.now()
+
+                    with open ("transactions.txt", "at") as transactionFile:
+                        line = date.strftime("%x %X") + "," + itemCode + "," + itemQuantity + "," + supplierCode + "\n"
+                        transactionFile.write(line)
                     
                     print("\nOperation successful")
                     print("____________________")
@@ -265,6 +296,7 @@ def inventory(admin):
                 print("____________________")
             
             ppeFile.close()
+            transactionFile.close()
 
         #Distributing Inventory-----------------------------------------------------------------------
         elif (option == "3"):
@@ -287,6 +319,7 @@ def inventory(admin):
                 print("Current quantity: " + ppeDB[key][2])
 
                 itemQuantity = input("\nAmount distibuting: ")
+                hospitalCode = input("Distributing hospital code: ")
 
                 if (int(ppeDB[key][2]) >= int(itemQuantity)):
                     total = int(ppeDB[key][2]) - int(itemQuantity)
@@ -304,6 +337,13 @@ def inventory(admin):
                         for x in range(len(ppeDB)):
                             line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
                             ppeFile.write(line)
+
+                    #Write transaction into transactions.txt
+                    date = datetime.datetime.now()
+
+                    with open ("transactions.txt", "at") as transactionFile:
+                        line = date.strftime("%x %X") + "," + itemCode + ",-" + itemQuantity + "," + hospitalCode + "\n"
+                        transactionFile.write(line)
                     
                     print("\nOperation successful")
                     print("____________________")
@@ -316,6 +356,7 @@ def inventory(admin):
 
 
             ppeFile.close()
+            transactionFile.close()
 
         #Back-----------------------------------------------------------------------
         elif (option == "4"):
@@ -522,6 +563,61 @@ def hospitals(admin):
     
     hospitalsFile.close()
 
+#Transaction function
+def transaction(admin):
+    while True:
+        with open("transactions.txt", "r") as transactionFile:
+            transactionDB = [[str(n) for n in line.strip().split(",")] for line in transactionFile.readlines() if line.strip]
+        
+        with open("hospitals.txt", "r") as hospitalFile:
+            hospitalDB = [[str(n) for n in line.strip().split(",")] for line in hospitalFile.readlines() if line.strip]
+        
+        print("\nPPE Transaction History Management\n")
+
+        print("1. View All Transaction")
+        print("2. View All Transaction (Add)")
+        print("3. View All Transaction (Distribute)")
+        print("4. Back")
+
+        print("===============")
+        option = input("Select an option: ")
+        print("===============")
+
+        #Viewing All Transaction-----------------------------------------------------------------------
+        if (option == "1"):
+            print("____________________________________________________________________________________")
+            print("|{:^25}|{:^15}|{:^15}|{:^25}|".format("Date and Time", "Item Code", "Quantity", "Supplier / Hospital"))
+            print("|-----------------------------------------------------------------------------------|")
+            for x in range(len(transactionDB)):
+                print("|{:^25}|{:^15}|{:^15}|{:^25}|".format(transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]))
+            print("|___________________________________________________________________________________|")
+
+        #View All Add Transaction-----------------------------------------------------------------------
+        elif (option == "3"):
+            view = []
+
+            #Search for inventory adding transaction
+            for x in range(len(transactionDB)):
+                for y in range(len(hospitalDB)):
+                    if (transactionDB[x][3] == hospitalDB[y][0]):
+                        temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
+                        view.append(temp)
+
+            print("____________________________________________________________________________________")
+            print("|{:^25}|{:^15}|{:^15}|{:^25}|".format("Date and Time", "Item Code", "Quantity", "Supplier / Hospital"))
+            print("|-----------------------------------------------------------------------------------|")
+            for x in range(len(view)):
+                print("|{:^25}|{:^15}|{:^15}|{:^25}|".format(view[x][0], view[x][1], view[x][2], view[x][3]))
+            print("|___________________________________________________________________________________|")
+        elif (option == "4"):
+            if admin:
+                adminMainMenu()
+            else:
+                mainMenu()
+        else:
+            print("Invalid option, please try again")
+            print("____________________")
+
 #Admin users function
 def users():
     while True:
@@ -540,7 +636,7 @@ def users():
         option = input("Select an option: ")
         print("===============")
 
-        #Viewving Users-----------------------------------------------------------------------
+        #Viewing Users-----------------------------------------------------------------------
         if (option == "1"):
             print("\nViewing all users...\n")
 
@@ -692,6 +788,4 @@ def users():
 #Main Logic
 while True:
     initial()
-
-    print("\nPPE Inventory Mangement System\n")
-    log = login()
+    login()

@@ -1,1 +1,3 @@
-A,A,A
+SP01,Supplier1,Bukit Jalil
+SP02,Supplier2,Petaling Jaya
+SP03,Supplier3,Cheras
