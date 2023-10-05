@@ -127,7 +127,7 @@ def login():
         db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
     loginStat = False
-    
+
     print("\nPPE Inventory Mangement System\n")
     
     username = str(input("Username: "))
@@ -568,10 +568,13 @@ def transaction(admin):
     while True:
         with open("transactions.txt", "r") as transactionFile:
             transactionDB = [[str(n) for n in line.strip().split(",")] for line in transactionFile.readlines() if line.strip]
-        
+
+        with open("suppliers.txt", "r") as supplierFile:
+            supplierDB = [[str(n) for n in line.strip().split(",")] for line in supplierFile.readlines() if line.strip]
+
         with open("hospitals.txt", "r") as hospitalFile:
             hospitalDB = [[str(n) for n in line.strip().split(",")] for line in hospitalFile.readlines() if line.strip]
-        
+
         print("\nPPE Transaction History Management\n")
 
         print("1. View All Transaction")
@@ -591,8 +594,25 @@ def transaction(admin):
             for x in range(len(transactionDB)):
                 print("|{:^25}|{:^15}|{:^15}|{:^25}|".format(transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]))
             print("|___________________________________________________________________________________|")
+        
+        #Viewing All Add Transaction-----------------------------------------------------------------------
+        elif (option == "2"):
+            view = []
 
-        #View All Add Transaction-----------------------------------------------------------------------
+            for x in range (len(transactionDB)):
+                for y in range (len(supplierDB)):
+                    if (transactionDB[x][3] == supplierDB[y][0]):
+                        temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
+                        view.append(temp)
+
+            print("_______________________________________________________________________________")
+            print("|{:^25}|{:^15}|{:^15}|{:^20}|".format("Date and Time", "Item Code", "Quantity", "Supplier"))
+            print("|------------------------------------------------------------------------------|")
+            for x in range(len(view)):
+                print("|{:^25}|{:^15}|{:^15}|{:^20}|".format(view[x][0], view[x][1], view[x][2], view[x][3]))
+            print("|______________________________________________________________________________|")
+
+        #View All Dustribute Transaction-----------------------------------------------------------------------
         elif (option == "3"):
             view = []
 
@@ -603,12 +623,14 @@ def transaction(admin):
                         temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
                         view.append(temp)
 
-            print("____________________________________________________________________________________")
-            print("|{:^25}|{:^15}|{:^15}|{:^25}|".format("Date and Time", "Item Code", "Quantity", "Supplier / Hospital"))
-            print("|-----------------------------------------------------------------------------------|")
+            print("_______________________________________________________________________________")
+            print("|{:^25}|{:^15}|{:^15}|{:^20}|".format("Date and Time", "Item Code", "Quantity", "Hospital"))
+            print("|------------------------------------------------------------------------------|")
             for x in range(len(view)):
-                print("|{:^25}|{:^15}|{:^15}|{:^25}|".format(view[x][0], view[x][1], view[x][2], view[x][3]))
-            print("|___________________________________________________________________________________|")
+                print("|{:^25}|{:^15}|{:^15}|{:^20}|".format(view[x][0], view[x][1], view[x][2], view[x][3]))
+            print("|______________________________________________________________________________|")
+
+        #Back-----------------------------------------------------------------------
         elif (option == "4"):
             if admin:
                 adminMainMenu()
