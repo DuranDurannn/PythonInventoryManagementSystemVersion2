@@ -80,7 +80,7 @@ def initial():
             date = datetime.datetime.now()
 
             with open ("transactions.txt", "at") as transactionFile:
-                line = date.strftime("%x %X") + "," + itemCode + "," + "100" + supplierCode
+                line = date.strftime("%x %X") + "," + itemCode + "," + "100" + supplierCode + "\n"
                 transactionFile.write(line)
 
             again = (input("\nDo you want to key in another item? Press (Y) to add another, other key to cancel: "))
@@ -127,7 +127,7 @@ def login():
         db = [[str(n) for n in line.strip().split(",")] for line in loginFile.readlines() if line.strip()]
 
     loginStat = False
-
+    
     print("\nPPE Inventory Mangement System\n")
     
     username = str(input("Username: "))
@@ -145,7 +145,7 @@ def login():
                 mainMenu()
                 admin = False
                 return admin
-    
+            
     if loginStat:
         pass
     else:
@@ -172,7 +172,7 @@ def adminMainMenu():
         if (option == "1"):
             inventory(admin)
         elif (option == "2"):
-            print("Supplier")
+            suppliers(admin)
         elif (option == "3"):
             hospitals(admin)
         elif (option == "4"):
@@ -203,7 +203,7 @@ def mainMenu():
         if (option == "1"):
             inventory(admin)
         elif (option == "2"):
-            print("Supplier")
+            suppliers(admin)
         elif (option == "3"):
             hospitals(admin)
         elif (option == "4"):
@@ -368,6 +368,205 @@ def inventory(admin):
             print("Invalid option, please try again")
             print("____________________")
 
+#Supplier function
+def suppliers(admin):
+    while True:
+        #Make line in suppliers.txt become a nested list
+        with open("suppliers.txt", "r") as suppliersFile:
+            suppliersDB = [[str(n) for n in line.strip().split(",")] for line in suppliersFile.readlines() if line.strip()]
+
+        print("\nPPE Supplier Management\n")
+
+        print("1. View Supplier")
+        print("2. Add Supplier")
+        print("3. Edit Supplier")
+        print("4. Delete Supplier")
+        print("5. Back")
+
+        print("===============")
+        option = input("Select an option: ")
+        print("===============")
+
+        #Viewving suppliers-----------------------------------------------------------------------
+        if (option == "1"):
+            print("\nViewing suppliers...\n")
+
+            print("_____________________________________________________")
+            print("|{:^15}|{:^15}|{:^20}|".format("Supplier Code", "Supplier Name", "Supplier Location"))
+            print("|----------------------------------------------------|")
+            for x in range(len(suppliersDB)):
+                print("|{:^15}|{:^15}|{:^20}|".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2]))
+            print("|____________________________________________________|")
+
+
+        #Adding suppliers-----------------------------------------------------------------------
+        elif (option == "2"):
+            print("\nAdding suppliers...\n")
+
+            #Check if there is more than 4 records
+            if (len(suppliersDB) < 4):
+                newSupplierCode = input("New supplier code: ")
+
+                #Search for duplicate
+                for x in range(0, len(suppliersDB)):
+                    if (newSupplierCode == suppliersDB[x][0]):
+                        dupe = True
+                        print("\nSupplier code " + suppliersDB[x][0] + " is already in database, please try again")
+                        break
+                    else:
+                        dupe = False
+                    
+                if (dupe == True):
+                    break
+                else:
+                    newSupplierName = input("New supplier name: ")
+                    newSupplierLocation = input("New supplier Location: ")
+
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                    if (confirm.lower() == "y"):
+                        #Append into suppliers.txt
+                        with open("suppliers.txt", "at") as suppliersFile:
+                            line = "{},{},{}\n".format(newSupplierCode, newSupplierName, newSupplierLocation)
+                            suppliersFile.write(line)
+
+                        print("\nOperation successful")
+                        print("____________________")
+                    else:
+                        print("\nOperation canceled")
+                        print("____________________")
+            else:
+                print("\nOnly 4 suppliers can be store in database")
+                print("____________________")
+
+        #Edit suppliers-----------------------------------------------------------------------
+        elif (option == "3"):
+            print("\nEditing suppliers...\n")
+                
+            editSupplierCode = input("Supplier code: ")
+
+            #Search for supplier code
+            for x in range(0, len(suppliersDB)):
+                if (editSupplierCode == suppliersDB[x][0]):
+                    search = suppliersDB[x][0]
+                    key = x
+                    break
+                else:
+                    search = suppliersDB[x][0]
+                    pass
+
+            if (search == editSupplierCode):
+                print("\nCurrent supplier code: " + suppliersDB[key][0])
+                print("Current supplier name: " + suppliersDB[key][1])
+                print("Current supplier location: " + suppliersDB[key][2])
+
+                newSupplierCode = input("\nNew supplier code:")
+
+            #Check if the new code is taken or not
+                for x in range(0, len(suppliersDB)):
+                    if (newSupplierCode == suppliersDB[x][0]):
+                        sameCode = True
+
+                        print("\nSupplier code " + suppliersDB[x][0] + " is already in databse, do you want to rewrite it?")
+                        rewrite = input("Press (Y) to confirm, other key to cancel: ")
+
+                        if (rewrite.lower() == "y"):
+                            sameCode = False
+                        else:
+                            pass
+                        break
+                    else:
+                        sameCode = False
+                        pass
+
+                if (sameCode == True):
+                    print("\nSupplier code " + suppliersDB[x][0] + " is already in database, please try again")
+                    print("____________________")
+                    pass
+                else:
+                    newSupplierName = input("New supplier name: ")
+                    newSupplierLocation = input("New supplier location: ")
+
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                    if (confirm.lower() == "y"):
+                        suppliersDB[key][0] = newSupplierCode
+                        suppliersDB[key][1] = newSupplierName
+                        suppliersDB[key][2] = newSupplierLocation
+
+                        #Write into suppliers.txt
+                        with open("suppliers.txt", "wt") as suppliersFile:
+                            for x in range(0, len(suppliersDB)):
+                                line = "{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2])
+                                suppliersFile.write(line)
+
+                        print("\nOperation successful")
+                        print("____________________")
+                    else:
+                        print("\nOperation canceled")
+                        print("____________________")
+            else:
+                print("\nSupplier code is not in database, please try again")
+                print("____________________")
+                    
+        #Deleting suppliers-----------------------------------------------------------------------
+        elif (option == "4"):
+            print("\nDeleting supplier...")
+
+            if (len(suppliersDB) > 2):
+                deleteSupplierCode = input("\nSupplier code: ")
+
+                for x in range(0, len(suppliersDB)):
+                    if (deleteSupplierCode == suppliersDB[x][0]):
+                        search = suppliersDB[x][0]
+                        key = x
+                        break
+                    else:
+                        search = suppliersDB[x][0]
+                        key = x
+                        pass
+                
+                if (search != deleteSupplierCode):
+                    confirm = "NULL"
+                else:
+                    print("\nAre you really sure you want to delete " + search + " from database")
+
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                #If true, pop the inputted supplier
+                if (confirm.lower() == "y"):
+                    del suppliersDB[key]
+                
+                    #Write into suppliers.txt
+                    with open("suppliers.txt", "wt") as suppliersFile:
+                        for x in range(len(suppliersDB)):
+                            line = "{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2])
+                            suppliersFile.write(line)
+
+                    print("\nOperation successful")
+                    print("____________________")
+                elif (confirm == "NULL"):
+                    print("\nSupplier code is not in database, please try again")
+                    print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
+            else:
+                print("\nAt least 2 hospitals must be store in database")
+                print("____________________")
+            
+        #Back-----------------------------------------------------------------------
+        elif (option == "5"):
+            if admin:
+                adminMainMenu()
+            else:
+                mainMenu()
+        else:
+            print("\nInvalid option, please try again")
+            print("____________________")
+    
+    suppliersFile.close()
+
 #Hospital function
 def hospitals(admin):
     while True:
@@ -390,7 +589,6 @@ def hospitals(admin):
         #Viewving hospitals-----------------------------------------------------------------------
         if (option == "1"):
             print("\nViewing hospitals...\n")
-
             print("_____________________________________________________")
             print("|{:^15}|{:^15}|{:^20}|".format("Hospital Code", "Hospital Name", "Hospital Location"))
             print("|----------------------------------------------------|")
@@ -403,7 +601,7 @@ def hospitals(admin):
             print("\nAdding hospitals...\n")
 
             #Check if there is more than 4 records
-            if (len(hospitalsDB) < 4):
+            if (len(hospitalsDB) > 4):
                 newHospitalCode = input("New hospital code: ")
 
                 #Search for duplicate
@@ -435,13 +633,13 @@ def hospitals(admin):
                         print("\nOperation canceled")
                         print("____________________")
             else:
-                print("Only 4 hospitals can be store in database")
+                print("\nOnly 4 hospitals can be store in database")
                 print("____________________")
 
         #Edit hospitals-----------------------------------------------------------------------
         elif (option == "3"):
             print("\nEditing hospitals...\n")
-                
+            
             editHospitalCode = input("Hospital code: ")
 
             #Search for hospital code
@@ -513,42 +711,46 @@ def hospitals(admin):
         elif (option == "4"):
             print("\nDeleting hospital...")
 
-            deleteHospitalCode = input("\nHospital code: ")
+            if (len(hospitalsDB) > 2):
+                deleteHospitalCode = input("\nHospital code: ")
 
-            for x in range(0, len(hospitalsDB)):
-                if (deleteHospitalCode == hospitalsDB[x][0]):
-                    search = hospitalsDB[x][0]
-                    key = x
-                    break
+                for x in range(0, len(hospitalsDB)):
+                    if (deleteHospitalCode == hospitalsDB[x][0]):
+                        search = hospitalsDB[x][0]
+                        key = x
+                        break
+                    else:
+                        search = hospitalsDB[x][0]
+                        key = x
+                        pass
+                
+                if (search != deleteHospitalCode):
+                    confirm = "NULL"
                 else:
-                    search = hospitalsDB[x][0]
-                    key = x
-                    pass
-            
-            if (search != deleteHospitalCode):
-                confirm = "NULL"
+                    print("\nAre you really sure you want to delete " + search + " from database")
+
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+
+                #If true, pop the inputted hospital
+                if (confirm.lower() == "y"):
+                    del hospitalsDB[key]
+                
+                    #Write into hospitals.txt
+                    with open("hospitals.txt", "wt") as hospitalsFile:
+                        for x in range(len(hospitalsDB)):
+                            line = "{},{},{}\n".format(hospitalsDB[x][0], hospitalsDB[x][1], hospitalsDB[x][2])
+                            hospitalsFile.write(line)
+
+                    print("\nOperation successful")
+                    print("____________________")
+                elif (confirm == "NULL"):
+                    print("\nHospital code is not in database, please try again")
+                    print("____________________")
+                else:
+                    print("\nOperation canceled")
+                    print("____________________")
             else:
-                print("\nAre you really sure you want to delete " + search + " from database")
-
-                confirm = input("\nPress (Y) to confirm, other key to cancel: ")
-
-            #If true, pop the inputted hospital
-            if (confirm.lower() == "y"):
-                del hospitalsDB[key]
-            
-                #Write into hospitals.txt
-                with open("hospitals.txt", "wt") as hospitalsFile:
-                    for x in range(len(hospitalsDB)):
-                        line = "{},{},{}\n".format(hospitalsDB[x][0], hospitalsDB[x][1], hospitalsDB[x][2])
-                        hospitalsFile.write(line)
-
-                print("\nOperation successful")
-                print("____________________")
-            elif (confirm == "NULL"):
-                print("\nHospital code is not in database, please try again")
-                print("____________________")
-            else:
-                print("\nOperation canceled")
+                print("\nAt least 2 hospitals must be store in database")
                 print("____________________")
             
         #Back-----------------------------------------------------------------------
@@ -599,6 +801,7 @@ def transaction(admin):
         elif (option == "2"):
             view = []
 
+            #Search for inventory distributing transaction
             for x in range (len(transactionDB)):
                 for y in range (len(supplierDB)):
                     if (transactionDB[x][3] == supplierDB[y][0]):
