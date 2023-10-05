@@ -1,1 +1,2 @@
-a,a,a
+SP01,Supplier1,a
+SP02,b,b
