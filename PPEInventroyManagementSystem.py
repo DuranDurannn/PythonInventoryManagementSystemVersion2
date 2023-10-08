@@ -11,16 +11,18 @@ def initial():
         with open ("suppliers.txt","x") as supplierFile:
             supplierFile.close()
 
-        print("Please insert Supplier Detail\n")
+        print("Please insert Supplier Detail (At least 2 and at most 4 supplier can be store in database)\n")
 
-        while True:
+        for x in range(0, 4):
             supplierCode = input("Supplier Code: ")
             supplierName = input("Supplier name: ")
             supplierLocation = input("Supplier location: ")
+            suppliedItemCode = input("Supplying item code (Insert / in between item code): ")
 
             with open ("suppliers.txt", "at") as supplierFile:
-                line = supplierCode + "," + supplierName + "," + supplierLocation + "\n"
+                line = supplierCode + "," + supplierName + "," + supplierLocation + "," + suppliedItemCode + "\n"
                 supplierFile.write(line)
+                supplierFile.close()
 
             again = (input("\nDo you want to key in another supplier? Press (Y) to add another, other key to cancel: "))
 
@@ -31,16 +33,14 @@ def initial():
             elif (again.lower() != "y"):
                 print("____________________")
                 break
-        
-        supplierFile.close()
 
         #File creation for hospitals.txt
         with open ("hospitals.txt", "x") as hospitalFile:
             hospitalFile.close()
 
-        print("Please insert Hospital Detail\n")
+        print("Please insert Hospital Detail (At least 2 and at most 4 hospital can be store in database)\n")
 
-        while True:
+        for x in range(0, 4):
             hospitalCode = input("Hospital Code: ")
             hospitalName = input("Hospital Name: ")
             hospitalLocation = input("Hospital Location: ")
@@ -48,6 +48,7 @@ def initial():
             with open ("hospitals.txt", "at") as hospitalFile:
                 line = hospitalCode + "," + hospitalName + "," + hospitalLocation + "\n"
                 hospitalFile.write(line)
+                hospitalFile.close()
 
             again = (input("\nDo you want to key in another hospital? Press (Y) to add another, other key to cancel: "))
 
@@ -58,9 +59,6 @@ def initial():
             elif (again.lower() != "y"):
                 print("____________________")
                 break
-            
-
-        hospitalFile.close()
 
         #File creation for ppe.txt
         with open ("ppe.txt","x") as ppeFile:
@@ -74,14 +72,16 @@ def initial():
             supplierCode = input("Supplier code: ")
 
             with open ("ppe.txt", "at") as ppeFile:
-                line = itemCode + "," + itemName + ",100," + supplierCode
+                line = itemCode + "," + itemName + ",100," + supplierCode  + "\n"
                 ppeFile.write(line)
+                ppeFile.close()
 
             date = datetime.datetime.now()
 
             with open ("transactions.txt", "at") as transactionFile:
-                line = date.strftime("%x %X") + "," + itemCode + "," + "100" + supplierCode + "\n"
+                line = date.strftime("%x %X") + "," + itemCode + "," + "100," + supplierCode + "\n"
                 transactionFile.write(line)
+                transactionFile.close()
 
             again = (input("\nDo you want to key in another item? Press (Y) to add another, other key to cancel: "))
 
@@ -90,9 +90,6 @@ def initial():
             elif (again.lower() != "y"):
                 print("____________________")
                 break
-
-        ppeFile.close()
-        transactionFile.close()
 
         #File creation for usres.txt and also a super user (admin)
         with open("users.txt", "x") as userFile:
@@ -108,12 +105,11 @@ def initial():
                 with open("users.txt", "wt") as userFile:
                     line = newAdminUsername + "," + newAdminPassword + "," + "A\n"
                     userFile.write(line)
+                    userFile.close()
                     print("____________________")
                     break
             else:
                 pass
-
-        userFile.close()
         
         print("Initialization completed... All files have been created\n")
         print("Admin username: " + newAdminUsername)
@@ -304,7 +300,7 @@ def inventory(admin):
             else:
                 print("Invalid option, please try again")
                 print("____________________")
-                
+
         #Adding Inventory-----------------------------------------------------------------------
         elif (option == "2"):
             print("\nAdding inventory...\n")
