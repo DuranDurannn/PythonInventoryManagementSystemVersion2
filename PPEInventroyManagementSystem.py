@@ -74,7 +74,7 @@ def initial():
             supplierCode = input("Supplier code: ")
 
             with open ("ppe.txt", "at") as ppeFile:
-                line = itemCode + "," + itemName + ",100\n"
+                line = itemCode + "," + itemName + ",100," + supplierCode
                 ppeFile.write(line)
 
             date = datetime.datetime.now()
@@ -154,7 +154,6 @@ def login():
 #Admin main menu
 def adminMainMenu():
     while True:
-        print("=========================")
         print("\nWelcome to PPE Inventory Management System\n")
         print("1. Inventory")
         print("2. Supplier")
@@ -220,6 +219,9 @@ def inventory(admin):
         with open("ppe.txt", "r") as ppeFile:
             ppeDB = [[str(n) for n in line.strip().split(",")] for line in ppeFile.readlines() if line.strip()]
 
+        with open("hospitals.txt", "r") as hospitalFile:
+            hospitalDB = [[str(n) for n in line.strip().split(",")] for line in hospitalFile.readlines() if line.strip()]
+
         print("\nPPE Inventory Management\n")
 
         print("1. View Inventory")
@@ -235,13 +237,74 @@ def inventory(admin):
         if (option == "1"):
             print("\nViewing inventory...\n")
 
-            print("___________________________________________")
-            print("|{:^15}|{:^15}|{:^10}|".format("Item Code", "Item Name", "Quantity"))
-            print("|------------------------------------------|")
-            for x in range(len(ppeDB)):
-                print("|{:^15}|{:^15}|{:^10}|".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2]))
-            print("|__________________________________________|")
-        
+            print("1.All item")
+            print("2.Selected item")
+            print("3.Item with lest then 25")
+            print("4.Back")
+
+            print("===============")
+            viewOption = input("Select an option: ")
+            print("===============")
+
+            #All inventory
+            if (viewOption == "1"):
+                print("________________________________________________________________")
+                print("|{:^15}|{:^15}|{:^10}|{:^20}|".format("Item Code", "Item Name", "Quantity", "Supplier Code"))
+                print("|---------------------------------------------------------------|")
+                for x in range(len(ppeDB)):
+                    print("|{:^15}|{:^15}|{:^10}|{:^20}|".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3]))
+                print("|_______________________________________________________________|")
+
+            #An item inventory
+            elif (viewOption == "2"):
+                itemCode = input("\nItem code: ")
+
+                #Search for item item code
+                for x in range(0, len(ppeDB)):
+                    if (itemCode == ppeDB[x][0]):
+                        search = ppeDB[x][0]
+                        key = x
+                        break
+                    else:
+                        search = ppeDB[x][0]
+                        pass        
+                
+                if (search == itemCode):
+                    print("________________________________________________________________")
+                    print("|{:^15}|{:^15}|{:^10}|{:^20}|".format("Item Code", "Item Name", "Quantity", "Supplier Code"))
+                    print("|---------------------------------------------------------------|")
+                    print("|{:^15}|{:^15}|{:^10}|{:^20}|".format(ppeDB[key][0], ppeDB[key][1], ppeDB[key][2], ppeDB[key][3]))
+                    print("|_______________________________________________________________|")
+                else:
+                    print("\nInvalid item code")
+                    print("____________________")
+            
+            #Item with lest than 25
+            elif (viewOption == "3"):
+                view = []
+
+                #Search for item with less than 25
+                for x in range(0, len(ppeDB)):
+                    if (int(ppeDB[x][2]) <= 25):
+                        view.append(ppeDB[x])
+                    else:
+                        pass
+
+                print("________________________________________________________________")
+                print("|{:^15}|{:^15}|{:^10}|{:^20}|".format("Item Code", "Item Name", "Quantity", "Supplier Code"))
+                print("|---------------------------------------------------------------|")
+                for x in range(0, len(view)):
+                    print("|{:^15}|{:^15}|{:^10}|{:^20}|".format(view[x][0], view[x][1], view[x][2], view[x][3]))
+                print("|_______________________________________________________________|") 
+
+            #Back
+            elif (viewOption == "4"):
+                inventory(admin)
+
+            else:
+                print("Invalid option, please try again")
+                print("____________________")
+                
         #Adding Inventory-----------------------------------------------------------------------
         elif (option == "2"):
             print("\nAdding inventory...\n")
@@ -263,7 +326,7 @@ def inventory(admin):
                 print("Current quantity: " + ppeDB[key][2])
 
                 itemQuantity = input("\nAmount adding to inventory: ")
-                supplierCode = input ("Supplier code: ")
+                print("Supplier Code: " + ppeDB[key][3])
 
                 total = int(ppeDB[key][2]) + int(itemQuantity)
                 print("\nQuantity after adding: " + str(total))
@@ -276,15 +339,16 @@ def inventory(admin):
                     #Write into ppe.txt
                     with open("ppe.txt", "wt") as ppeFile:
                         for x in range(len(ppeDB)):
-                            line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
+                            line = "{},{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3])
                             ppeFile.write(line)
 
                     #Write transaction into transactions.txt
                     date = datetime.datetime.now()
 
                     with open ("transactions.txt", "at") as transactionFile:
-                        line = date.strftime("%x %X") + "," + itemCode + "," + itemQuantity + "," + supplierCode + "\n"
+                        line = date.strftime("%x %X") + "," + itemCode + "," + itemQuantity + "," + ppeDB[key][3] + "\n"
                         transactionFile.write(line)
+                        transactionFile.close()
                     
                     print("\nOperation successful")
                     print("____________________")
@@ -296,7 +360,6 @@ def inventory(admin):
                 print("____________________")
             
             ppeFile.close()
-            transactionFile.close()
 
         #Distributing Inventory-----------------------------------------------------------------------
         elif (option == "3"):
@@ -321,42 +384,54 @@ def inventory(admin):
                 itemQuantity = input("\nAmount distibuting: ")
                 hospitalCode = input("Distributing hospital code: ")
 
-                if (int(ppeDB[key][2]) >= int(itemQuantity)):
-                    total = int(ppeDB[key][2]) - int(itemQuantity)
-                    print("\nQuantity after distributing: " + str(total))
+                for y in range(0, len(hospitalDB)):
+                    if (hospitalCode == hospitalDB[y][0]):
+                        hospitalSearch = hospitalDB[y][0]
+                        hospitalKey = y
+                        break
+                    else:
+                        hospitalSearch = hospitalDB[y][0]
+                        pass
 
-                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+                if (hospitalSearch == hospitalCode):
+                    if (int(ppeDB[key][2]) >= int(itemQuantity)):
+                        total = int(ppeDB[key][2]) - int(itemQuantity)
+                        print("\nQuantity after distributing: " + str(total))
+
+                        confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+                    else:
+                        print("\nNot enough stock")
+
+                    if (confirm.lower() == "y"):
+                        ppeDB[key][2] = total
+
+                        #Write into ppe.txt
+                        with open("ppe.txt", "wt") as ppeFile:
+                            for x in range(len(ppeDB)):
+                                line = "{},{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3])
+                                ppeFile.write(line)
+
+                        #Write transaction into transactions.txt
+                        date = datetime.datetime.now()
+
+                        with open ("transactions.txt", "at") as transactionFile:
+                            line = date.strftime("%x %X") + "," + itemCode + ",-" + itemQuantity + "," + hospitalCode + "\n"
+                            transactionFile.write(line)
+                            transactionFile.close()
+                        
+                        print("\nOperation successful")
+                        print("____________________")
+                    else:
+                        print("\nOperation canceled")
+                        print("____________________")
                 else:
-                    print("\nNot enough stock")
-
-                if (confirm.lower() == "y"):
-                    ppeDB[key][2] = total
-
-                    #Write into ppe.txt
-                    with open("ppe.txt", "wt") as ppeFile:
-                        for x in range(len(ppeDB)):
-                            line = "{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2])
-                            ppeFile.write(line)
-
-                    #Write transaction into transactions.txt
-                    date = datetime.datetime.now()
-
-                    with open ("transactions.txt", "at") as transactionFile:
-                        line = date.strftime("%x %X") + "," + itemCode + ",-" + itemQuantity + "," + hospitalCode + "\n"
-                        transactionFile.write(line)
-                    
-                    print("\nOperation successful")
-                    print("____________________")
-                else:
-                    print("\nOperation canceled")
+                    print("\nInvalid hospital code")
                     print("____________________")
             else:
                 print("\nInvalid item code")
                 print("____________________")
 
-
             ppeFile.close()
-            transactionFile.close()
 
         #Back-----------------------------------------------------------------------
         elif (option == "4"):
