@@ -495,23 +495,25 @@ def suppliers(admin):
                     elif (newSuppliedItemCode in suppliersDB[x][3]):
                         rewriteConfirm = input("Do you want to rewrite the item code for " + suppliersDB[x][0] + ", (Y) for yes, other key to cancel: ")
                         key = x
-                        dupe = False
                         break
                     else:
                         dupe = False
-                
+
+            try:
                 if (rewriteConfirm.lower() == "y"):
+                    dupe = False
+
                     newSupplierList = [newSupplierCode, newSupplierName, newSupplierLocation,newSuppliedItemCode]
 
                     temp = suppliersDB[key][3]
                     tempList = temp.split("/")
-                    
+                        
                     print("\n" + suppliersDB[key][0] + " current supplied item code: " + temp)
                     print(tempList)
-                            
+                                
                     newInput = input("\n" + suppliersDB[key][0] + " new supplied item code (Use / in between item code): ")
                     newList = newInput.split("/")
-                            
+                                
                     suppliersDB[key][3] = "/".join(newList)
 
                     if (newList == tempList):
@@ -522,6 +524,13 @@ def suppliers(admin):
                             line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
                             suppliersFile.write(line)
                     suppliersFile.close()
+            except:
+                dupe = True
+
+                print("\nError occur, please edit file before adding supplier")
+                print("____________________")
+
+                suppliers(admin)
                     
                 if(dupe == False):
                     confirm = input("Press (Y) to confirm, other key to cancel: ")
@@ -533,9 +542,11 @@ def suppliers(admin):
                             suppliersFile.write(line)
                         suppliersFile.close()
 
+                        #Reread the file for new data
                         with open("suppliers.txt", "r") as suppliersFile:
                             newSuppliersDB = [[str(n) for n in line.strip().split(",")] for line in suppliersFile.readlines() if line.strip()]
 
+                        #Comparing ppe.txt with suppliers.txt
                         for x in range(0, len(ppeDB)):
                             for y in range(0, len(newSuppliersDB)):
                                 if (ppeDB[x][0] in newSuppliedItemCode):
