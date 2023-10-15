@@ -11,7 +11,7 @@ def initial():
         with open ("suppliers.txt","x") as supplierFile:
             supplierFile.close()
 
-        print("Please insert Supplier Detail (At least 2 and at most 4 supplier can be store in database)\n")
+        print("Please insert Supplier Detail (At least 3 and at most 4 supplier can be store in database)\n")
 
         for x in range(0, 4):
             supplierCode = input("Supplier Code: ")
@@ -38,7 +38,7 @@ def initial():
         with open ("hospitals.txt", "x") as hospitalFile:
             hospitalFile.close()
 
-        print("Please insert Hospital Detail (At least 2 and at most 4 hospital can be store in database)\n")
+        print("Please insert Hospital Detail (At least 3 and at most 4 hospital can be store in database)\n")
 
         for x in range(0, 4):
             hospitalCode = input("Hospital Code: ")
@@ -446,6 +446,9 @@ def suppliers(admin):
         with open("suppliers.txt", "r") as suppliersFile:
             suppliersDB = [[str(n) for n in line.strip().split(",")] for line in suppliersFile.readlines() if line.strip()]
 
+        with open("ppe.txt", "r") as ppeFile:
+            ppeDB = [[str(n) for n in line.strip().split(",")] for line in ppeFile.readlines() if line.strip()]
+
         print("\nPPE Supplier Management\n")
 
         print("1. View Supplier")
@@ -462,12 +465,12 @@ def suppliers(admin):
         if (option == "1"):
             print("\nViewing suppliers...\n")
 
-            print("_____________________________________________________")
-            print("|{:^15}|{:^15}|{:^20}|".format("Supplier Code", "Supplier Name", "Supplier Location"))
-            print("|----------------------------------------------------|")
+            print("__________________________________________________________________________")
+            print("|{:^15}|{:^15}|{:^20}|{:^20}|".format("Supplier Code", "Supplier Name", "Supplier Location", "Supplied Item"))
+            print("|-------------------------------------------------------------------------|")
             for x in range(len(suppliersDB)):
-                print("|{:^15}|{:^15}|{:^20}|".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2]))
-            print("|____________________________________________________|")
+                print("|{:^15}|{:^15}|{:^20}|{:^20}|".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3]))
+            print("|_________________________________________________________________________|")
 
 
         #Adding suppliers-----------------------------------------------------------------------
@@ -477,35 +480,81 @@ def suppliers(admin):
             #Check if there is more than 4 records
             if (len(suppliersDB) < 4):
                 newSupplierCode = input("New supplier code: ")
+                newSupplierName = input("New supplier name: ")
+                newSupplierLocation = input("New supplier location: ")
+                newSuppliedItemCode = input("New supplied item code (Use / in between item code): ")
 
                 #Search for duplicate
                 for x in range(0, len(suppliersDB)):
+                    #Check for same supplier code
                     if (newSupplierCode == suppliersDB[x][0]):
                         dupe = True
                         print("\nSupplier code " + suppliersDB[x][0] + " is already in database, please try again")
+                        suppliers(admin)
+                    #Check for same item code
+                    elif (newSuppliedItemCode in suppliersDB[x][3]):
+                        rewriteConfirm = input("Do you want to rewrite the item code for " + suppliersDB[x][0] + ", (Y) for yes, other key to cancel: ")
+                        key = x
+                        dupe = False
                         break
                     else:
                         dupe = False
-                    
-                if (dupe == True):
-                    break
-                else:
-                    newSupplierName = input("New supplier name: ")
-                    newSupplierLocation = input("New supplier Location: ")
+                
+                if (rewriteConfirm.lower() == "y"):
+                    newSupplierList = [newSupplierCode, newSupplierName, newSupplierLocation,newSuppliedItemCode]
 
-                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
+                    temp = suppliersDB[key][3]
+                    tempList = temp.split("/")
+                    
+                    print("\n" + suppliersDB[key][0] + " current supplied item code: " + temp)
+                    print(tempList)
+                            
+                    newInput = input("\n" + suppliersDB[key][0] + " new supplied item code (Use / in between item code): ")
+                    newList = newInput.split("/")
+                            
+                    suppliersDB[key][3] = "/".join(newList)
+
+                    if (newList == tempList):
+                        suppliersDB[key][3] = "-"
+
+                    with open("suppliers.txt", "wt") as suppliersFile:
+                        for x in range(0, len(suppliersDB)):
+                            line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
+                            suppliersFile.write(line)
+                    suppliersFile.close()
+                    
+                if(dupe == False):
+                    confirm = input("Press (Y) to confirm, other key to cancel: ")
 
                     if (confirm.lower() == "y"):
                         #Append into suppliers.txt
                         with open("suppliers.txt", "at") as suppliersFile:
-                            line = "{},{},{}\n".format(newSupplierCode, newSupplierName, newSupplierLocation)
+                            line = "{},{},{},{}\n".format(newSupplierCode, newSupplierName, newSupplierLocation, newSuppliedItemCode)
                             suppliersFile.write(line)
+                        suppliersFile.close()
+
+                        with open("suppliers.txt", "r") as suppliersFile:
+                            newSuppliersDB = [[str(n) for n in line.strip().split(",")] for line in suppliersFile.readlines() if line.strip()]
+
+                        for x in range(0, len(ppeDB)):
+                            for y in range(0, len(newSuppliersDB)):
+                                if (ppeDB[x][0] in newSuppliedItemCode):
+                                    ppeDB[x][3] = newSuppliersDB[y][0]
+
+                        #Write into ppe.txt based on the edited supplier list
+                        with open("ppe.txt", "wt") as ppeFile:
+                            for x in range(0, len(ppeDB)):
+                                line = line = "{},{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3])
+                                ppeFile.write(line)
+                            ppeFile.close
 
                         print("\nOperation successful")
                         print("____________________")
                     else:
                         print("\nOperation canceled")
                         print("____________________")
+                else:
+                    break
             else:
                 print("\nOnly 4 suppliers can be store in database")
                 print("____________________")
@@ -530,6 +579,7 @@ def suppliers(admin):
                 print("\nCurrent supplier code: " + suppliersDB[key][0])
                 print("Current supplier name: " + suppliersDB[key][1])
                 print("Current supplier location: " + suppliersDB[key][2])
+                print("Current supplied item code: " + suppliersDB[key][3])
 
                 newSupplierCode = input("\nNew supplier code:")
 
@@ -557,6 +607,7 @@ def suppliers(admin):
                 else:
                     newSupplierName = input("New supplier name: ")
                     newSupplierLocation = input("New supplier location: ")
+                    newSuppliedItemCode = input("New supplier item code: ")
 
                     confirm = input("\nPress (Y) to confirm, other key to cancel: ")
 
@@ -564,11 +615,24 @@ def suppliers(admin):
                         suppliersDB[key][0] = newSupplierCode
                         suppliersDB[key][1] = newSupplierName
                         suppliersDB[key][2] = newSupplierLocation
+                        suppliersDB[key][3] = newSuppliedItemCode
+
+                        for x in range(0, len(ppeDB)):
+                            for y in range(0, len(suppliersDB)):
+                                if (ppeDB[x][0] in suppliersDB[y][3]):
+                                    ppeDB[x][3] = suppliersDB[y][0]
+
+                        #Write into ppe.txt based on the edited supplier list
+                        with open("ppe.txt", "wt") as ppeFile:
+                            for x in range(0, len(ppeDB)):
+                                line = line = "{},{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3])
+                                ppeFile.write(line)
+                                ppeFile.close
 
                         #Write into suppliers.txt
                         with open("suppliers.txt", "wt") as suppliersFile:
                             for x in range(0, len(suppliersDB)):
-                                line = "{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2])
+                                line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
                                 suppliersFile.write(line)
 
                         print("\nOperation successful")
@@ -611,7 +675,7 @@ def suppliers(admin):
                     #Write into suppliers.txt
                     with open("suppliers.txt", "wt") as suppliersFile:
                         for x in range(len(suppliersDB)):
-                            line = "{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2])
+                            line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
                             suppliersFile.write(line)
 
                     print("\nOperation successful")
