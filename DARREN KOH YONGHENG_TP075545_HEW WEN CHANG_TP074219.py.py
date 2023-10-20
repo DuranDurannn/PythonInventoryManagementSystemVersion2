@@ -242,6 +242,8 @@ def inventory(admin):
             viewOption = input("Select an option: ")
             print("===============")
 
+            ppeDB.sort(key = lambda x: x[0])
+
             #All inventory
             if (viewOption == "1"):
                 print("________________________________________________________________")
@@ -461,6 +463,8 @@ def suppliers(admin):
         option = input("Select an option: ")
         print("===============")
 
+        suppliersDB.sort(key = lambda x: x[0])
+
         #Viewving suppliers-----------------------------------------------------------------------
         if (option == "1"):
             print("\nViewing suppliers...\n")
@@ -616,9 +620,9 @@ def suppliers(admin):
                     print("____________________")
                     pass
                 else:
-                    newSupplierName = input("New supplier name: ")
-                    newSupplierLocation = input("New supplier location: ")
-                    newSuppliedItemCode = input("New supplier item code: ")
+                    newSupplierName = input("Edit supplier name: ")
+                    newSupplierLocation = input("Edit supplier location: ")
+                    newSuppliedItemCode = input("Edit supplier item code: ")
 
                     confirm = input("\nPress (Y) to confirm, other key to cancel: ")
 
@@ -731,6 +735,8 @@ def hospitals(admin):
         print("===============")
         option = input("Select an option: ")
         print("===============")
+
+        hospitalsDB.sort(key = lambda x: x[0])
 
         #Viewving hospitals-----------------------------------------------------------------------
         if (option == "1"):
