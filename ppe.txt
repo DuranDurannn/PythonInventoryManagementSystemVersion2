@@ -1,6 +1,6 @@
-HC,Head Cover,100,SP01
-FS,Face Shield,100,SP01
-MS,Mask,100,SP02
-GL,Gloves,100,SP02
+HC,Head Cover,100,SP05
+FS,Face Shield,25,SP04
+MS,Mask,40,SP02
+GL,Gloves,150,SP02
 GW,Gown,100,SP03
 SC,Shoe Covers,100,SP03

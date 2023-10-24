@@ -1,3 +1,4 @@
-SP03,Supplier3,Bukit Jalil,GW/SC
-SP01,Supplier1,Kuala Lumpur,HC/FS
+SP05,Supplier5,Kuala Lumpur,HC
 SP02,Supplier2,Petaling Jaya,MS/GL
+SP03,Supplier3,Bukit Jalil,GW/SC
+SP04,Supplier4,Ipoh,FS

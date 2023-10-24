@@ -441,7 +441,7 @@ def inventory(admin):
             print("Invalid option, please try again")
             print("____________________")
 
-#Supplier function
+#Suppliers function
 def suppliers(admin):
     while True:
         #Make line in suppliers.txt become a nested list
@@ -482,7 +482,7 @@ def suppliers(admin):
             print("\nAdding suppliers...\n")
 
             #Check if there is more than 4 records
-            if (len(suppliersDB) < 4):
+            if (len(suppliersDB) <= 4):
                 newSupplierCode = input("New supplier code: ")
                 newSupplierName = input("New supplier name: ")
                 newSupplierLocation = input("New supplier location: ")
@@ -497,47 +497,46 @@ def suppliers(admin):
                         suppliers(admin)
                     #Check for same item code
                     elif (newSuppliedItemCode in suppliersDB[x][3]):
-                        rewriteConfirm = input("Do you want to rewrite the item code for " + suppliersDB[x][0] + ", (Y) for yes, other key to cancel: ")
+                        rewriteConfirm = input("\nDo you want to rewrite the item code for " + suppliersDB[x][0] + ", (Y) for yes, other key to cancel: ")
                         key = x
                         break
                     else:
                         dupe = False
 
-            try:
-                if (rewriteConfirm.lower() == "y"):
-                    dupe = False
+                try:
+                    if (rewriteConfirm.lower() == "y"):
+                        dupe = False
 
-                    newSupplierList = [newSupplierCode, newSupplierName, newSupplierLocation,newSuppliedItemCode]
+                        newSupplierList = [newSupplierCode, newSupplierName, newSupplierLocation,newSuppliedItemCode]
 
-                    temp = suppliersDB[key][3]
-                    tempList = temp.split("/")
-                        
-                    print("\n" + suppliersDB[key][0] + " current supplied item code: " + temp)
-                    print(tempList)
-                                
-                    newInput = input("\n" + suppliersDB[key][0] + " new supplied item code (Use / in between item code): ")
-                    newList = newInput.split("/")
-                                
-                    suppliersDB[key][3] = "/".join(newList)
+                        temp = suppliersDB[key][3]
+                        tempList = temp.split("/")
+                            
+                        print("\n" + suppliersDB[key][0] + " current supplied item code: " + temp)
+                                    
+                        newInput = input("\n" + suppliersDB[key][0] + " new supplied item code (Use / in between item code): ")
+                        newList = newInput.split("/")
+                                    
+                        suppliersDB[key][3] = "/".join(newList)
 
-                    if (newList == tempList):
-                        suppliersDB[key][3] = "-"
+                        if (newList == tempList):
+                            suppliersDB[key][3] = "-"
 
-                    with open("suppliers.txt", "wt") as suppliersFile:
-                        for x in range(0, len(suppliersDB)):
-                            line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
-                            suppliersFile.write(line)
-                    suppliersFile.close()
-            except:
-                dupe = True
+                        with open("suppliers.txt", "wt") as suppliersFile:
+                            for x in range(0, len(suppliersDB)):
+                                line = "{},{},{},{}\n".format(suppliersDB[x][0], suppliersDB[x][1], suppliersDB[x][2], suppliersDB[x][3])
+                                suppliersFile.write(line)
+                        suppliersFile.close()
+                except:
+                    dupe = True
 
-                print("\nError occur, please edit file before adding supplier")
-                print("____________________")
+                    print("\nError occur, please edit file before adding supplier")
+                    print("____________________")
 
-                suppliers(admin)
+                    suppliers(admin)
                     
                 if(dupe == False):
-                    confirm = input("Press (Y) to confirm, other key to cancel: ")
+                    confirm = input("\nPress (Y) to confirm, other key to cancel: ")
 
                     if (confirm.lower() == "y"):
                         #Append into suppliers.txt
@@ -683,9 +682,20 @@ def suppliers(admin):
 
                     confirm = input("\nPress (Y) to confirm, other key to cancel: ")
 
-                #If true, pop the inputted supplier
                 if (confirm.lower() == "y"):
+                    for x in range(0, len(ppeDB)):
+                        for y in range(0, len(suppliersDB)):
+                                if (ppeDB[x][0] in suppliersDB[key]):
+                                    ppeDB[x][3] = "-"
+
+                    #If true, pop the inputted supplier
                     del suppliersDB[key]
+
+                    with open("ppe.txt", "wt") as ppeFile:
+                        for x in range(0, len(ppeDB)):
+                            line = line = "{},{},{},{}\n".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3])
+                            ppeFile.write(line)
+                            ppeFile.close
                 
                     #Write into suppliers.txt
                     with open("suppliers.txt", "wt") as suppliersFile:
@@ -753,7 +763,7 @@ def hospitals(admin):
             print("\nAdding hospitals...\n")
 
             #Check if there is more than 4 records
-            if (len(hospitalsDB) > 4):
+            if (len(hospitalsDB) <= 4):
                 newHospitalCode = input("New hospital code: ")
 
                 #Search for duplicate
@@ -953,12 +963,11 @@ def transaction(admin):
         elif (option == "2"):
             view = []
 
-            #Search for inventory distributing transaction
+            #Search for inventory adding transaction
             for x in range (len(transactionDB)):
-                for y in range (len(supplierDB)):
-                    if (transactionDB[x][3] == supplierDB[y][0]):
-                        temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
-                        view.append(temp)
+                if (int(transactionDB[x][2]) >= 0):
+                    temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
+                    view.append(temp)
 
             print("_______________________________________________________________________________")
             print("|{:^25}|{:^15}|{:^15}|{:^20}|".format("Date and Time", "Item Code", "Quantity", "Supplier"))
@@ -971,12 +980,11 @@ def transaction(admin):
         elif (option == "3"):
             view = []
 
-            #Search for inventory adding transaction
-            for x in range(len(transactionDB)):
-                for y in range(len(hospitalDB)):
-                    if (transactionDB[x][3] == hospitalDB[y][0]):
-                        temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
-                        view.append(temp)
+            #Search for inventory distribute transaction
+            for x in range (len(transactionDB)):
+                if (int(transactionDB[x][2]) < 0):
+                    temp = [transactionDB[x][0], transactionDB[x][1], transactionDB[x][2], transactionDB[x][3]]
+                    view.append(temp)
 
             print("_______________________________________________________________________________")
             print("|{:^25}|{:^15}|{:^15}|{:^20}|".format("Date and Time", "Item Code", "Quantity", "Hospital"))

@@ -1,3 +1,3 @@
 HS01,Hospital1,Bukit Jalil
-HS02,Hospital2,Petaling Jaya
+HS02,Hospital22,Petaling Jaya
 HS03,Hospital3,Kuala Lumpur
