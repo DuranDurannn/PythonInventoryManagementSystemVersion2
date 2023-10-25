@@ -124,7 +124,7 @@ def login():
 
     loginStat = False
     
-    print("\nPPE Inventory Mangement System\n")
+    print("\nPPE Inventory Management System\n")
     
     username = str(input("Username: "))
     password = str(input("Password: "))
@@ -1090,11 +1090,11 @@ def users():
             if (search == editUser):
                 print("\nCurrent username: " + usersDB[key][0])
                 print("Current password: " + usersDB[key][1])
-                print("Current authorization: " + usersDB[key][2])
+                print("Current authorization (A / S): " + usersDB[key][2])
 
                 newUsername = input("\nNew username: ")
                 newPassword = input("New password: ")
-                newAuthority = input("New authorization: ")
+                newAuthority = input("New authorization (A / S): ")
 
                 confirm = input("\nPress (Y) to confirm, other key to cancel: ")
 
