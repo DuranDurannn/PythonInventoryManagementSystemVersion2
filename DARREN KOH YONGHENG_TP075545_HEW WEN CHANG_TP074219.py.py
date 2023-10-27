@@ -157,6 +157,7 @@ def adminMainMenu():
         print("4. Transaction")
         print("5. Users")
         print("6. Logout")
+        print("7. Exit Program")
 
         print("=========================")
         option = input("Please selct an option: ")
@@ -176,6 +177,9 @@ def adminMainMenu():
             users()
         elif (option == "6"):
             login()
+        elif (option == "7"):
+            print("\nExiting program...")
+            exit()
         else:
             print("\nThere is no such option")
 
@@ -188,6 +192,7 @@ def mainMenu():
         print("3. Hospital")
         print("4. Transaction")
         print("5. Logout")
+        print("6. Exit Program")
 
         print("=========================")   
         option = input("Please selct an option: ")
@@ -205,6 +210,9 @@ def mainMenu():
             transaction(admin)
         elif (option == "5"):
             login()
+        elif (option == "6"):
+            print("\nExiting program...")
+            exit()
         else:
             print("\nThere is no such option")
 
@@ -253,7 +261,7 @@ def inventory(admin):
                     print("|{:^15}|{:^15}|{:^10}|{:^20}|".format(ppeDB[x][0], ppeDB[x][1], ppeDB[x][2], ppeDB[x][3]))
                 print("|_______________________________________________________________|")
 
-            #An item inventory
+            #View an item inventory
             elif (viewOption == "2"):
                 itemCode = input("\nItem code: ")
 
@@ -597,7 +605,7 @@ def suppliers(admin):
 
                 newSupplierCode = input("\nNew supplier code:")
 
-            #Check if the new code is taken or not
+                #Check if the new code is taken or not
                 for x in range(0, len(suppliersDB)):
                     if (newSupplierCode == suppliersDB[x][0]):
                         sameCode = True
@@ -932,12 +940,6 @@ def transaction(admin):
     while True:
         with open("transactions.txt", "r") as transactionFile:
             transactionDB = [[str(n) for n in line.strip().split(",")] for line in transactionFile.readlines() if line.strip]
-
-        with open("suppliers.txt", "r") as supplierFile:
-            supplierDB = [[str(n) for n in line.strip().split(",")] for line in supplierFile.readlines() if line.strip]
-
-        with open("hospitals.txt", "r") as hospitalFile:
-            hospitalDB = [[str(n) for n in line.strip().split(",")] for line in hospitalFile.readlines() if line.strip]
 
         print("\nPPE Transaction History Management\n")
 
